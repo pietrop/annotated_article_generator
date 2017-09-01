@@ -495,12 +495,12 @@ TogetherJS.hub.on("text-send", function (msg) {
     // $('#SourceText').html(msg.output);
     // 
     // quill.setText(msg.output);
-    var caretPosition = quill.getSelection();
+    // var caretPosition = quill.getSelection();
 
     quill.setContents(msg.output);
 
     //end of workaround to keep cursor in place 
-    quill.setSelection(caretPosition.index, caretPosition.length);
+    // quill.setSelection(caretPosition.index, caretPosition.length);
 
     console.log(msg.output);
 });
@@ -517,7 +517,7 @@ TogetherJS.hub.on("text-send-opened-catpions", function (msg) {
     // console.log(JSON.stringify(tmpText, null, 2));  
     
     //workaround to keep cursor in place 
-    var caretPosition = quill.getSelection();
+    // var caretPosition = quill.getSelection();
 
     quill.insertText(length, msg.output );
 
@@ -525,7 +525,7 @@ TogetherJS.hub.on("text-send-opened-catpions", function (msg) {
     quill.setContents(msg.output);
 
       //end of workaround to keep cursor in place 
-    quill.setSelection(caretPosition.index, caretPosition.length);
+    // quill.setSelection(caretPosition.index, caretPosition.length);
 
     console.log(msg.output);
 });
