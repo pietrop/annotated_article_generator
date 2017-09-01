@@ -452,7 +452,7 @@ quill.on('text-change', function(delta, oldDelta, source) {
     var sharedtext = quill.getContents();
      if (TogetherJS.running) {
         TogetherJS.send({
-            type: "text-send-opened-catpions",
+            type: "text-send",
             output: sharedtext
         });
       }
