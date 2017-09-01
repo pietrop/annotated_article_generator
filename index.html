@@ -398,14 +398,14 @@ function initialiseConnection(){
     quill.insertText(length, tmpText );
 
     //for collaboration only 
-    //  var sharedtext = quill.getContents();//quill.getText();
-    //   if (TogetherJS.running) {
-    //     TogetherJS.send({
-    //         type: "text-send-opened-catpions",
-    //         output: sharedtext
-    //     });
-    //     console.log("user",sharedtext);
-    // }
+     var sharedtext = quill.getContents();//quill.getText();
+      if (TogetherJS.running) {
+        TogetherJS.send({
+            type: "text-send-opened-catpions",
+            output: sharedtext
+        });
+        console.log("user",sharedtext);
+    }
     //end collab
 
 
