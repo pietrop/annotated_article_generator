@@ -299,7 +299,6 @@ saveChannelsSettingsBtn.onclick = function(){
   console.log('channels',channels);
   setChannels(channels);
 
-
   //TODO: close modal when done, click modal close button.
   closeChannelsSettingsBtn.click()
 }
@@ -451,12 +450,12 @@ quill.on('text-change', function(delta, oldDelta, source) {
   if (source == 'api') {
     console.log("An API call triggered this change.");
     var sharedtext = quill.getContents();
-     // if (TogetherJS.running) {
-     //    TogetherJS.send({
-     //        type: "text-send",
-     //        output: sharedtext
-     //    });
-     //  }
+     if (TogetherJS.running) {
+        TogetherJS.send({
+            type: "text-send",
+            output: sharedtext
+        });
+      }
     console.log("API Call",sharedtext);
   } else if (source == 'user') {
     console.log("A user action triggered this change.");
