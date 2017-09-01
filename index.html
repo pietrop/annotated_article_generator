@@ -452,7 +452,7 @@ quill.on('text-change', function(delta, oldDelta, source) {
     var sharedtext = quill.getContents();
      if (TogetherJS.running) {
         TogetherJS.send({
-            type: "text-send",
+            type: "text-send-opened-catpions",
             output: sharedtext
         });
       }
@@ -510,11 +510,12 @@ TogetherJS.hub.on("text-send-opened-catpions", function (msg) {
     // console.log(JSON.stringify(tmpText, null, 2));  
     
     //workaround to keep cursor in place 
-    var caretPosition = quill.getSelection();
+    // var caretPosition = quill.getSelection();
+    
     quill.insertText(length, msg.output );
 
     //end of workaround to keep cursor in place 
-    quill.setSelection(caretPosition.index, caretPosition.length);
+    // quill.setSelection(caretPosition.index, caretPosition.length);
     // quill.setContents(msg.output);
     console.log(msg.output);
 });
