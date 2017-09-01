@@ -107,7 +107,7 @@ div#editor {
 </div><!-- tvControls -->
 
    <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
-      <button class="btn btn-sm btn-default" onclick="TogetherJS(this); return false;" disabled>Collaborate</button>
+      <button class="btn btn-sm btn-default" onclick="TogetherJS(this); return false;" >Collaborate</button>
       <button href="#" class="btn btn-sm btn-default " disabled> <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></button>
       <button href="#" class="btn btn-sm btn-default  makeHTML"> <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Download Article </button>
  
@@ -508,7 +508,13 @@ TogetherJS.hub.on("text-send-opened-catpions", function (msg) {
     // var tmpText = " " +data.data.body.toLowerCase().replace(/\r\n/g, "").replace(/>>*/g, "\n");
 
     // console.log(JSON.stringify(tmpText, null, 2));  
+    
+    //workaround to keep cursor in place 
+    var caretPosition = quill.getSelection();
     quill.insertText(length, msg.output );
+
+    //end of workaround to keep cursor in place 
+    quill.setSelection(caretPosition.index, caretPosition.length);
     // quill.setContents(msg.output);
     console.log(msg.output);
 });
