@@ -44,9 +44,9 @@ Videos are added as links, so you need to host them somewhere else
 Use together Js. 
 
 
-## Advanced feature
+<!-- ## Advanced feature
 
-It is possible to integrate with a live stream of captions from services such as [opened captions](http://www.openedcaptions.com)
+It is possible to integrate with a live stream of captions from services such as [opened captions](http://www.openedcaptions.com) -->
 
 
 # Contributor 
