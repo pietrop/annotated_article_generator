@@ -27,7 +27,7 @@ Developed for Buenos Aires Media Party Hacks/Hackers workshop.
 
 ## Usage
 
-Navigate to [this page](link to github page version)
+Navigate to [this page](http://pietropassarelli.com/annotated_article_generator/)
 
 
 ### Multimedia 

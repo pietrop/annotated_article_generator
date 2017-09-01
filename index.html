@@ -447,72 +447,72 @@ TODO:
 - perhaps when together js is on `TogetherJS.send` should send the text from opened caption socket so that they all receive it at same time. 
 - as well as having an on edit changes etc..
 */
-// quill.on('text-change', function(delta, oldDelta, source) {
-//   if (source == 'api') {
-//     console.log("An API call triggered this change.");
-//     var sharedtext = quill.getContents();
-//      // if (TogetherJS.running) {
-//      //    TogetherJS.send({
-//      //        type: "text-send",
-//      //        output: sharedtext
-//      //    });
-//      //  }
-//     console.log("API Call",sharedtext);
-//   } else if (source == 'user') {
-//     console.log("A user action triggered this change.");
-//       var sharedtext = quill.getContents();//quill.getText();
-//       if (TogetherJS.running) {
-//         TogetherJS.send({
-//             type: "text-send",
-//             output: sharedtext
-//         });
-//         console.log("user",sharedtext);
-//     }
-//   }
-// }); 
+quill.on('text-change', function(delta, oldDelta, source) {
+  if (source == 'api') {
+    console.log("An API call triggered this change.");
+    var sharedtext = quill.getContents();
+     // if (TogetherJS.running) {
+     //    TogetherJS.send({
+     //        type: "text-send",
+     //        output: sharedtext
+     //    });
+     //  }
+    console.log("API Call",sharedtext);
+  } else if (source == 'user') {
+    console.log("A user action triggered this change.");
+      var sharedtext = quill.getContents();//quill.getText();
+      if (TogetherJS.running) {
+        TogetherJS.send({
+            type: "text-send",
+            output: sharedtext
+        });
+        console.log("user",sharedtext);
+    }
+  }
+}); 
 
-//This makes sure that new users who join are up to speed with content of the text editor
-// TogetherJS.hub.on("togetherjs.hello", function (msg) {
-//   //TODO: disable start button for 
-//   //startConnectionEl.disabled = true;
-//   //channelSelectEl.disabled = true;
-//   //TODO: needs a listener to re-enable when TogetherJS is closed.
-//     if (! msg.sameUrl) {
-//         return;
-//     }
-//      var sharedtext = quill.getContents();
-//      TogetherJS.send({
-//           type: "text-send",
-//           output: sharedtext
-//       });
-// });
+This makes sure that new users who join are up to speed with content of the text editor
+TogetherJS.hub.on("togetherjs.hello", function (msg) {
+  //TODO: disable start button for 
+  //startConnectionEl.disabled = true;
+  //channelSelectEl.disabled = true;
+  //TODO: needs a listener to re-enable when TogetherJS is closed.
+    if (! msg.sameUrl) {
+        return;
+    }
+     var sharedtext = quill.getContents();
+     TogetherJS.send({
+          type: "text-send",
+          output: sharedtext
+      });
+});
 
 
 
-// TogetherJS.hub.on("text-send", function (msg) {
-//     if (! msg.sameUrl) {
-//         return;
-//     }
-//     // $('#SourceText').html(msg.output);
-//     // quill.setText(msg.output);
-//     quill.setContents(msg.output);
-//     console.log(msg.output);
-// });
+TogetherJS.hub.on("text-send", function (msg) {
+    if (! msg.sameUrl) {
+        return;
+    }
+    // $('#SourceText').html(msg.output);
+    // quill.setText(msg.output);
+    quill.setContents(msg.output);
+    console.log(msg.output);
+});
 
-// TogetherJS.hub.on("text-send-opened-catpions", function (msg) {
-//     if (! msg.sameUrl) {
-//         return;
-//     }
-//     // $('#SourceText').html(msg.output);
-//     // quill.setText(msg.output);
-//      var length = quill.getLength() -1;
-//     // var tmpText = " " +data.data.body.toLowerCase().replace(/\r\n/g, "").replace(/>>*/g, "\n");
+TogetherJS.hub.on("text-send-opened-catpions", function (msg) {
+    if (! msg.sameUrl) {
+        return;
+    }
+    // $('#SourceText').html(msg.output);
+    // quill.setText(msg.output);
+     var length = quill.getLength() -1;
+    // var tmpText = " " +data.data.body.toLowerCase().replace(/\r\n/g, "").replace(/>>*/g, "\n");
 
-//     // console.log(JSON.stringify(tmpText, null, 2));  
-//     quill.insertText(length, msg.output );
-//     // quill.setContents(msg.output);
-//     console.log(msg.output);
-// });
+    // console.log(JSON.stringify(tmpText, null, 2));  
+    quill.insertText(length, msg.output );
+    // quill.setContents(msg.output);
+    console.log(msg.output);
+});
 
 // var example = quill.getContents();
 // {
