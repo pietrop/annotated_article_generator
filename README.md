@@ -7,7 +7,6 @@ Developed for Buenos Aires Media Party Hacks/Hackers workshop.
 
 
 <!-- Change image -->
-![image example](http://pietropassarelli.com/img/opened_caption_app/opened_caption_annotation_app.png)
 
 <!-- Add image previewing article  -->
 
@@ -44,3 +43,12 @@ Videos are added as links, so you need to host them somewhere else
 
 Use together Js. 
 
+
+## Advanced feature
+
+It is possible to integrate with a live stream of captions from services such as [opened captions](http://www.openedcaptions.com)
+
+
+# Contributor 
+
+- [Pietro](http://twitter.com/pietropassarell)
