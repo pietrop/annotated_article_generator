@@ -1,0 +1,757 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test </title>
+
+    <!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet"> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+   <!-- <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/paper/bootstrap.min.css" rel="stylesheet" integrity="sha384-awusxf8AUojygHf2+joICySzB780jVvQaVCAt1clU3QsyAitLGul28Qxb2r1e5g+" crossorigin="anonymous"> -->
+
+   <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" integrity="sha384-Li5uVfY2bSkD3WQyiHX8tJd0aMF91rMrQP5aAewFkHkVSTT2TmD2PehZeMmm7aiL" crossorigin="anonymous">
+
+  <link href="https://cdn.quilljs.com/1.3.1/quill.snow.css" rel="stylesheet">
+<!-- <link rel="stylesheet" href="//cdn.quilljs.com/1.3.1/quill.bubble.css"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script src="https://togetherjs.com/togetherjs-min.js"></script>
+
+<!-- https://github.com/eligrey/FileSaver.js -->
+<script src="https://fastcdn.org/FileSaver.js/1.1.20151003/FileSaver.min.js"></script>
+
+  </head>
+  <body>
+
+<style>
+#counter {
+  border: 1px solid #ccc;
+  border-width: 0px 1px 1px 1px;
+  color: #aaa;
+  padding: 5px 15px;
+  text-align: right;
+}
+
+
+div#editor {
+    height: 500px;
+}
+
+.ql-author:after {
+  content: "a";
+}
+
+.hidden {
+    display: none;
+}
+
+/*select.form-control.navbarCustom {
+    color: white;
+}*/
+
+</style>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Annotated Article Generator</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+      <ul class="nav navbar-nav">
+     
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">About</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<!-- Include stylesheet -->
+<div class="container-fluid">
+
+
+
+<div class="row">
+
+<div id="tvControls" class="hidden">
+ <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+
+<div class="form-group">
+      <label for="select" class=" col-xs-5 col-sm-5 col-md-5 col-lg-5 control-label">Tv channel</label>
+      <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
+        <select class="form-control" id="channelSelect">
+        </select>
+      </div>
+    </div>
+</div>
+
+  <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+<!-- <div class="btn-group btn-group-justified"> -->
+  <button href="#" class="btn btn-sm btn-primary startConnection"> <span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></button>
+  <button href="#" class="btn btn-sm btn-primary closeConnection" disabled> <span class="glyphicon glyphicon-off" aria-hidden="true"></span></button>
+<!-- </div> -->
+ </div>
+
+</div><!-- tvControls -->
+
+   <div class="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+      <button class="btn btn-sm btn-default" onclick="TogetherJS(this); return false;" disabled>Collaborate</button>
+      <button href="#" class="btn btn-sm btn-default " disabled> <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></button>
+      <button href="#" class="btn btn-sm btn-default  makeHTML"> <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Download Article </button>
+ 
+      <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target=".channelSettingsModal"> <span class="g glyphicon glyphicon-cog" aria-hidden="true"></button>
+ </div>
+
+</div>
+
+<div class="row">
+ 
+ </div>
+  
+  <br>
+  <div id="editor">
+    <h1>Some title</h1>
+    <br> <br>
+  </div>
+
+<!-- <div id="counter"></div> -->
+
+</div>
+
+
+<!-- Modal for channel settings -->
+
+<div class="modal fade channelSettingsModal" tabindex="-1" role="dialog" aria-labelledby="channelSettingsModal">
+   <form id="channelsSettings">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Streams settings</h4>
+      </div>
+      <div class="modal-body">
+       
+        <div class="row">
+          <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
+            <div class="form-group">
+              <label class="control-label" for="focusedInput">Channel Name</label>
+              <input class="form-control" name="channel-name" type="text" value="" placeholder="A Channel Name">
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+             <div class="form-group">
+              <label class="control-label" for="focusedInput">Channel Streaming URL</label>
+              <input class="form-control" name="channel-url" type="text" value="" placeholder="https://...">
+             </div>
+          </div>
+        </div>
+        </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default closeChannelsSettingsBtn" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary saveChannelsSettingsBtn">Save changes</button>
+      </div>
+
+    </div>
+  </div>
+  </form>
+</div>
+
+
+
+<!-- Include the Quill library -->
+<script src="https://cdn.quilljs.com/1.3.1/quill.js"></script>
+
+<!-- Initialize Quill editor -->
+<script>
+
+
+// 
+var toolbarOptions = [
+  [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+  ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+  ['blockquote','author','code-block'],
+  ['link', 'image', 'video'],
+
+  // [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+  [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+  // [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+  [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+  // [{ 'direction': 'rtl' }],                         // text direction
+  [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+
+  [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+  // [{ 'font': [] }],
+  [{ 'align': [] }],
+
+  ['clean']                                       // remove formatting button
+];
+
+
+var quill = new Quill('#editor', {
+  theme: 'snow',//bubble snow
+   modules: {
+    toolbar: toolbarOptions//'#toolbar'//,
+    //  counter: {
+    //   container: '#counter',
+    //   unit: 'word'
+    // }
+  }
+});
+
+var toolbar = quill.getModule('toolbar');
+toolbar.addHandler('author', function() {
+  console.log('author')
+});
+
+
+var customButton = document.querySelector('.ql-author');
+customButton.addEventListener('click', function() {
+  var range = quill.getSelection();
+  if (range) {
+    quill.insertEmbed(range.index, "<footer>Author</footer>");
+  }
+});
+
+
+
+// var counter = quill.getModule('counter');
+
+// // We can now access calculate() directly
+// console.log(counter.calculate(), 'words');
+
+
+</script>
+
+
+
+<script>
+'use strict';
+
+var startConnectionEl = document.querySelector('.startConnection');
+var closeConnectionEl = document.querySelector('.closeConnection');
+var channelSelectEl   = document.getElementById('channelSelect');
+var tvControlsEl = document.getElementById('tvControls');
+var saveChannelsSettingsBtn = document.querySelector('.saveChannelsSettingsBtn');
+var closeChannelsSettingsBtn = document.querySelector('.closeChannelsSettingsBtn');
+
+
+
+var channelsUrls;
+
+
+ document.addEventListener("DOMContentLoaded", function(event) {
+    if (typeof(Storage) !== "undefined") {
+        // Code for localStorage/sessionStorage.
+        if(channelsAreSetInLocalStorage()){
+          setChannels(getChannelsFromLocalStorage());
+        }
+        
+    } else {
+        // Sorry! No Web Storage support..
+        alert("We are unable to save changes on your browser, try using Chrome or another browser that supports local storage");
+    }
+});
+
+
+//check local storage exists and is valid
+
+function channelsAreSetInLocalStorage(){
+  if(localStorage.getItem("channels") === null){
+    return false;
+  }else{
+    return true;
+  }
+}
+
+function saveChannelsLocally(channels){
+  console.info("saving channels");
+  localStorage.setItem("channels", JSON.stringify(channels));
+}
+
+function getChannelsFromLocalStorage(channels){
+  console.info("retrieving channels");
+  var channelsTmp = localStorage.getItem("channels");
+
+  return JSON.parse(channelsTmp);
+}
+
+
+
+
+saveChannelsSettingsBtn.onclick = function(){
+  var channelsFromForm = $('form#channelsSettings').serializeArray();
+  var channels = convertAllChannelsFormForm(channelsFromForm);
+
+  console.log('channels',channels);
+  setChannels(channels);
+
+
+  //TODO: close modal when done, click modal close button.
+  closeChannelsSettingsBtn.click()
+}
+
+function convertAllChannelsFormForm(channlsFromForm){
+  // var result = []
+  // result.push(
+   return  convertOneChannelFromForm(channlsFromForm) //)
+  //  var chunkedChannlsFromForm = Array.chunk(channlsFromForm,2);
+  //  console.log("chunkedChannlsFromForm",chunkedChannlsFromForm)
+  // var results = [];
+  // chunkedChannlsFromForm.forEach(function(ch){
+  //   results.push(convertOneChannelFromForm(ch))
+  // })
+  // return results;
+}
+
+function convertOneChannelFromForm(channelFromForm){
+  // {name: "channel-name", value: "sdf"}
+  var channel ={}
+  channel[channelFromForm[0].value] = channelFromForm[1].value.trim();
+  return channel; //eg {channel-name: "sdf"}
+}
+
+
+
+function channelsAreSet(){
+  if(channelsUrls == undefined){
+    return false;
+  }else{
+    return true;
+  }
+}
+
+
+function setChannels(channels){
+  channelsUrls = channels;
+
+  saveChannelsLocally(channels);
+  // reset
+  channelSelectEl.innerHTML="";
+  //display 
+  for (var property in channels) {
+      if (channels.hasOwnProperty(property)) {
+          var tmpOption = addChannelOption(property);
+          channelSelectEl.appendChild(tmpOption);
+      }
+  }
+  showChannelControls(true);
+
+}
+
+function addChannelOption(channelName){
+   var option = document.createElement('option');
+    option.value = channelName;
+    option.innerText = channelName;
+    return option;
+} 
+
+
+function showChannelControls(bool){
+  if(bool){
+    tvControlsEl.classList=""
+  }else{
+     tvControlsEl.classList="hidden";
+  }
+  
+}
+
+var socket; 
+
+
+function currentChannelSelected(){
+  return channelSelectEl.options[channelSelectEl.selectedIndex].value;
+}
+
+
+function getCurrentChannelUrl(){
+  var currentChannel = currentChannelSelected();
+  var socketUrl = channelsUrls[currentChannel];
+  return socketUrl;
+}
+
+function initialiseConnection(){
+  socket = io(getCurrentChannelUrl());
+  socket.close();
+
+  socket.on('content', function (data) {
+    console.log(JSON.stringify(data, null, 2));  
+
+    // -1 so that it adds on same line
+    var length = quill.getLength() -1;
+    var tmpText = " " +data.data.body.toLowerCase().replace(/\r\n/g, "").replace(/>>*/g, "\n");
+
+    console.log(JSON.stringify(tmpText, null, 2));  
+    quill.insertText(length, tmpText );
+
+    //for collaboration only 
+    //  var sharedtext = quill.getContents();//quill.getText();
+    //   if (TogetherJS.running) {
+    //     TogetherJS.send({
+    //         type: "text-send-opened-catpions",
+    //         output: sharedtext
+    //     });
+    //     console.log("user",sharedtext);
+    // }
+    //end collab
+
+
+    // socket.emit('my other event', { my: 'data' });
+  });
+
+  socket.on('disconnect', () => {
+    console.info("<|----|> disconnected");
+  });
+}
+
+startConnectionEl.onclick = function(){
+  if(channelsAreSet()){
+    initialiseConnection();
+    console.info("----> start connection");
+    // socket.connect();
+    socket.open(); 
+    closeConnectionEl.disabled = false;
+    startConnectionEl.disabled = true;
+    channelSelectEl.disabled = true;
+  }else{
+    alert("You need to set the channels to be able to start a stream, click on settings.");
+  }
+  
+}
+
+closeConnectionEl.onclick = function(){
+  console.info("---->  closed connection");
+  socket.close();
+  closeConnectionEl.disabled = true;
+  startConnectionEl.disabled = false;
+  channelSelectEl.disabled = false;
+}
+
+
+/* TogetherJS Sync content of text editor across users 
+TODO: 
+- Better sync between 
+- perhaps when together js is on `TogetherJS.send` should send the text from opened caption socket so that they all receive it at same time. 
+- as well as having an on edit changes etc..
+*/
+// quill.on('text-change', function(delta, oldDelta, source) {
+//   if (source == 'api') {
+//     console.log("An API call triggered this change.");
+//     var sharedtext = quill.getContents();
+//      // if (TogetherJS.running) {
+//      //    TogetherJS.send({
+//      //        type: "text-send",
+//      //        output: sharedtext
+//      //    });
+//      //  }
+//     console.log("API Call",sharedtext);
+//   } else if (source == 'user') {
+//     console.log("A user action triggered this change.");
+//       var sharedtext = quill.getContents();//quill.getText();
+//       if (TogetherJS.running) {
+//         TogetherJS.send({
+//             type: "text-send",
+//             output: sharedtext
+//         });
+//         console.log("user",sharedtext);
+//     }
+//   }
+// }); 
+
+//This makes sure that new users who join are up to speed with content of the text editor
+// TogetherJS.hub.on("togetherjs.hello", function (msg) {
+//   //TODO: disable start button for 
+//   //startConnectionEl.disabled = true;
+//   //channelSelectEl.disabled = true;
+//   //TODO: needs a listener to re-enable when TogetherJS is closed.
+//     if (! msg.sameUrl) {
+//         return;
+//     }
+//      var sharedtext = quill.getContents();
+//      TogetherJS.send({
+//           type: "text-send",
+//           output: sharedtext
+//       });
+// });
+
+
+
+// TogetherJS.hub.on("text-send", function (msg) {
+//     if (! msg.sameUrl) {
+//         return;
+//     }
+//     // $('#SourceText').html(msg.output);
+//     // quill.setText(msg.output);
+//     quill.setContents(msg.output);
+//     console.log(msg.output);
+// });
+
+// TogetherJS.hub.on("text-send-opened-catpions", function (msg) {
+//     if (! msg.sameUrl) {
+//         return;
+//     }
+//     // $('#SourceText').html(msg.output);
+//     // quill.setText(msg.output);
+//      var length = quill.getLength() -1;
+//     // var tmpText = " " +data.data.body.toLowerCase().replace(/\r\n/g, "").replace(/>>*/g, "\n");
+
+//     // console.log(JSON.stringify(tmpText, null, 2));  
+//     quill.insertText(length, msg.output );
+//     // quill.setContents(msg.output);
+//     console.log(msg.output);
+// });
+
+// var example = quill.getContents();
+// {
+//   "ops": [
+//     {
+//       "insert": " that is exactly the cause of this accident. that's going to be investigated as a part of what they're calling this comprehensive  review.  this is the fourth accident involving u.s. navy ships deployed to this part of the world in this year alone. part of that will be that operational pause, what that will look like, different commands from across the world will take one day each over the next several weeks to pause operations for"
+//     },
+//     {
+//       "attributes": {
+//         "background": "#ffff66"
+//       },
+//       "insert": " one day and examine their safety standards and see if any of the issues are systemic. we are expecting, though, in terms of this particular incident to get another update. "
+//     },
+//     {
+//       "insert": "we are expecting to hear from the commander of the u.s. pacific fleet at a press conference at 7:00 a.m. eastern standard time, 7:00 p.m. in singapore later this evening. \n\nsome consideration"
+//     },
+//     {
+//       "attributes": {
+//         "blockquote": true
+//       },
+//       "insert": "\n"
+//     },
+//     {
+//       "insert": "\n keep us up to date about the search. mass rivers live in -- matt  rivers live in singapore.  thanks.  \n new details about the  suspected van driver in last  week's deadly barcelona terror  attack.  police say he was wearing a fake  explosives belt when they shot  and killed him during a  operation monday 30 miles west  of barcelona.  for more on the latest in the  investigation, we'll go live to  barcelona.  they have been hunting for this  man, and now he is dead.  \n reporter: that's right.  an extraordinary nationwide  manhunt is over for this  22-year-old moroccan, the one  accused of coming barreling down  the street i'm on now, la  rambla, killing 13 people.  he was found just outside  barcelona after a woman called  police saying, i've seen footage  of him, and i believe i've found  your man.  shortly afterward, the interior  ministry announced the cell  behind this horrific attack has  been dismantled.  this does not mean the work is  over yet for authorities.  remember, the cell of 12 had a \n"
+//     }
+//   ]
+// }
+
+
+// // helper functions
+// function makeQuoteComment(quoteText){
+//   return `<br><blockquote>${quoteText}</blockquote>`;
+// }
+
+// function makeHighlight(text){
+//   return `<mark>${text}</mark>`
+// }
+
+// //delta format to represent text 
+// //https://quilljs.com/guides/designing-the-delta-format/
+// function parseDetla(delta){
+//   var deltaOperations = delta.ops; 
+//   var result ="";
+
+//   deltaOperations.forEach(function(item, index, collection){
+//     //is either a highlight or a quote/comment 
+//     //TODO: what if user adds other formatting, eg bold or etc? 
+//     if(item.attributes){
+//       if(item.attributes.background){
+//         // style="background-color: rgb(255, 255, 102);"
+//         result += makeHighlight(item.insert);
+      
+
+//       }else if(item.attributes.blockquote){
+//         var ar = collection[index-1].insert.split("\n\n")
+//         console.log(JSON.stringify(ar,null,2))
+//         var arIndex = ar.length -1; 
+
+//         var text = ar[arIndex];
+//         console.log(JSON.stringify(text,null,2))
+//        result += makeQuoteComment(text);
+
+//       }
+
+//     }else{
+//       //is regular text 
+//         //TODO Remove last quoted bit if following element is a quote
+//         var text = "";
+//         if(collection[index+1]&&collection[index+1].attributes&&collection[index+1].attributes.blockquote){
+//            var ar = item.insert.split("\n\n")
+//            var arIndex = ar.length -1; 
+//            ar.pop();
+//           text =  ar.join(" ");
+//         }else{
+//           text = item.insert 
+//         }
+
+
+//      result += text//;
+
+//     }
+//   })
+
+//   return result; 
+
+// }
+
+// parseDetla(example)
+// 
+// 
+
+var makeHTMLBtnEl = document.querySelector('.makeHTML');
+
+makeHTMLBtnEl.onclick= function(){
+  //TODO: need to add either side 
+  var content = htmlHead; 
+   content += generateHTMLFromQuilContent();
+   content += htmlTail;
+  var file = new File([content], "index.html", {type: "text/plain;charset=utf-8"});
+  saveAs(file, 'index.html');
+}
+
+
+//from https://stackoverflow.com/questions/39519950/convert-quill-delta-to-html
+//or can also just do 
+//
+//
+// function quillGetHTML(inputDelta) {
+//     var tempCont = document.createElement("div");
+//     (new Quill(tempCont)).setContents(inputDelta);
+//     return tempCont.getElementsByClassName("ql-editor")[0].innerHTML;
+// }
+
+function generateHTMLFromQuilContent(){
+  // var deltaContent = quill.getContents();
+  // return quillGetHTML(deltaContent)
+  return document.querySelector(".ql-editor").innerHTML; 
+}
+
+
+// TODO: need to footer with author's name
+// <footer>— Crazy hunch-backed old guy from the movie Aladdin</footer>
+// 
+// <blockquote>
+// <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+// <footer>Someone famous in <cite title="Source Title"><a href="wwww.example.com">Source Title</a></cite></footer>
+// </blockquote>
+
+
+
+var htmlHead = `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Annotated Article</title>
+
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  </head>
+  <body>
+  <style>
+  /*.highlight*/
+  span {
+    padding: 3px;
+    background-color: #fff200;
+    font-weight: 600;
+  }
+   blockquote{
+    background-color: #f1f3f2;
+    border-left: 0px !important;
+    overflow-wrap: break-word;
+    font-family: "Harriet Text", Georgia, "Times New Roman", Times, serif;
+    display: block;
+    margin: 0;
+    background-color: #f1f3f2;
+  }
+  footer {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-top: 5px solid #fff200;
+    background-color: #f1f3f2;
+    font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif !important;
+    color: black!important;
+    font-weight: bold;
+    margin-top: 14px;
+}
+
+blockquote footer:before {
+    content: '';
+}
+  </style>
+  <div class="container">`;
+
+var htmlTail = `
+  </div></body></html>`;
+
+</script>
+
+<script>
+
+// https://stackoverflow.com/questions/8495687/split-array-into-chunks
+function chunk (arr, len) {
+
+  var chunks = [],
+      i = 0,
+      n = arr.length;
+
+  while (i < n) {
+    chunks.push(arr.slice(i, i += len));
+  }
+
+  return chunks;
+}
+
+// Optionally, you can do the following to avoid cluttering the global namespace:
+Array.chunk = chunk;
+
+
+// config = {channelName: "A channel name", channelUrl: "https://..."}
+function makeChannelFormComponent(config){
+  var channelName;
+  var channelUrl;
+
+  if(config == undefined){
+    channelName= "";
+    channelUrl = "";
+  }else{
+    channelName = config.channelName;
+    channelUrl = config.channelUrl;
+  }
+
+var channelsFormComponent = `<div class="row">
+          <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
+            <div class="form-group">
+              <label class="control-label" for="focusedInput">Channel Name</label>
+              <input class="form-control" name="channel-name" type="text" value="${channelName}" placeholder="CSPAN">
+            </div>
+          </div>
+          <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+             <div class="form-group">
+              <label class="control-label" for="focusedInput">Channel Streaming URL</label>
+              <input class="form-control" name="channel-url" type="text" value="${channelUrl}" placeholder="https://openedcaptions.com:443">
+             </div>
+          </div>
+        </div>`
+  return channelsFormComponent;
+}
+
+
+</script>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</body>
+
+<html>
