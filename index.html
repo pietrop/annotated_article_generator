@@ -47,8 +47,6 @@ div#editor {
     display: none;
 }
 
-
-
 /*select.form-control.navbarCustom {
     color: white;
 }*/
@@ -64,7 +62,7 @@ div#editor {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Annotated Article Generator</a>
+      <a class="navbar-brand" href="/annotated_article_generator">Annotated Article Generator</a>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
@@ -270,7 +268,6 @@ var channelsUrls;
         if(channelsAreSetInLocalStorage()){
           setChannels(getChannelsFromLocalStorage());
         }
-        
     } else {
         // Sorry! No Web Storage support..
         alert("We are unable to save changes on your browser, try using Chrome or another browser that supports local storage");
@@ -497,35 +494,43 @@ var toghterJSBtnEl = document.getElementById('start-togetherjs');
 
 // });
 
-// TogetherJS.on("close", function () {
-//   toghterJSBtnEl.disabled = false; 
-//   console.info("togehter JS closed");
-// });
+TogetherJS.on("close", function () {
+  toghterJSBtnEl.disabled = false; 
+  console.info("togehter JS closed");
+
+  startConnectionEl.disabled = false;
+});
 
 
 // This makes sure that new users who join are up to speed with content of the text editor
-// TogetherJS.hub.on("togetherjs.hello", function (msg) {
-//   //TODO: disable start button for 
-//   //startConnectionEl.disabled = true;
-//   //channelSelectEl.disabled = true;
-//   //TODO: needs a listener to re-enable when TogetherJS is closed.
-//     if (! msg.sameUrl) {
-//         return;
-//     }
-//     console.info('msg', msg);
-//     var sharedtext = quill.getContents();
+TogetherJS.hub.on("togetherjs.hello", function (msg) {
+    if (! msg.sameUrl) {
+        return;
+    }
+    console.info('msg', msg);
+    var sharedtext = quill.getContents();
 
-//     console.log("ogetherjs.hello",sharedtext);
-//     // quill.setContents(msg.output);
-//      // var sharedtext = quill.getContents();
-//      TogetherJS.send({
-//           type: "text-send",
-//           output: sharedtext
-//       });
-// });
+    console.log("ogetherjs.hello",sharedtext);
+    // quill.setContents(msg.output);
+     // var sharedtext = quill.getContents();
+     TogetherJS.send({
+          type: "text-send-new-user",
+          output: JSON.stringify(sharedtext)
+      });
+});
 
+//Response when a new user joins togetherJs session 
+TogetherJS.hub.on("text-send-new-user", function (msg) {
+    if (! msg.sameUrl) {
+        return;
+    }
+    // disable opened caption button to avoid another user being able to start 
+    startConnectionEl.disabled = true;
+    // set content 
+    quill.setContents(JSON.parse(msg.output));
+});
 
-
+// listener for when the user types 
 TogetherJS.hub.on("text-send", function (msg) {
     if (! msg.sameUrl) {
         return;
@@ -533,11 +538,11 @@ TogetherJS.hub.on("text-send", function (msg) {
     quill.updateContents(JSON.parse(msg.output));
 });
 
+// Opened caption stream listener updated 
 TogetherJS.hub.on("text-send-opened-catpions", function (msg) {
     if (! msg.sameUrl) {
         return;
     }
-    // quill.updateContents(JSON.parse(msg.output));
     var length = quill.getLength() -1;
     quill.insertText(length, msg.output );
 });
