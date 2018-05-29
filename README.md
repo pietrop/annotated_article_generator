@@ -45,6 +45,18 @@ npm start
 visit [http://localhost:8001/index.html](http://localhost:8001/index.html)
 
 
+<!-- in settings
+`Channel Name`: BBC24
+
+And in `Channel Streaming URL`: http://127.0.0.1:8002
+
+
+https://openedcaptions.com:443
+http://openedcaptions.media.mit.edu:8080
+http://openedcaptions.media.mit.edu:8082
+ -->
+
+
 ### Working Demo 
 
 Otherwise navigate to [the working demo page](http://pietropassarelli.com/annotated_article_generator/)
@@ -109,7 +121,12 @@ Because of the presence of the server 'backend' you'll need to deploy on a serve
 
 <!-- ## TODO
 
-- [ ] Add support for more BBC and US channels  -->
+- [ ] Add support for more BBC and US channels 
+ 
+ see if need to change server to switch connection or just stream all connections?
+
+Add more options in stream settings. hard code configs.
+  -->
 
 # Contributor 
 

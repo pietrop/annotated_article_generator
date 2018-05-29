@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "node index.js",
     "client": "http-server -a 0.0.0.0 -p 8001",
-    "start": "npm run server & npm run client"
+    "start": "npm run server & npm run client & open http://localhost:8001/index.html"
   },
   "author": "Pietro Passarelli <pietro.passarelli@gmail.com> (http://pietropassarelli.com)",
   "license": "ISC",
