@@ -54,6 +54,9 @@ And in `Channel Streaming URL`: http://127.0.0.1:8002
 https://openedcaptions.com:443
 http://openedcaptions.media.mit.edu:8080
 http://openedcaptions.media.mit.edu:8082
+
+---
+openedcaptions.media.mit.edu:8080  has CNN http://openedcaptions.media.mit.edu:8081  has MSNBC http://openedcaptions.media.mit.edu:8082  has Fox (I don't know if Fox is Fox news or not at this point)
  -->
 
 
