@@ -13,7 +13,7 @@ var client  = mqtt.connect('mqtt://iot.eclipse.org/bbc/subtitles/bbc_news24/comp
 
 // https://github.com/mqttjs/MQTT.js#mqttclientsubscribetopictopic-arraytopic-object-options-callback
 client.subscribe('bbc/subtitles/bbc_news24/raw', function(es){
-  console.info('connected to MQTT BBC Channel');
+  console.info('connected to MQTT BBC Channel', es);
 });
 
 client.on('connect', function (es) {

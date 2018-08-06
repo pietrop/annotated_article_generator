@@ -9,6 +9,7 @@
     <!-- <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet"> -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+    <script src="https://unpkg.com/mqtt@2.18.3/dist/mqtt.min.js"></script>
    <!-- <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/paper/bootstrap.min.css" rel="stylesheet" integrity="sha384-awusxf8AUojygHf2+joICySzB780jVvQaVCAt1clU3QsyAitLGul28Qxb2r1e5g+" crossorigin="anonymous"> -->
 
    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/readable/bootstrap.min.css" rel="stylesheet" integrity="sha384-Li5uVfY2bSkD3WQyiHX8tJd0aMF91rMrQP5aAewFkHkVSTT2TmD2PehZeMmm7aiL" crossorigin="anonymous">
@@ -89,7 +90,7 @@ div#editor {
 
 <div class="row">
 
-<div  id="tvControls" class="hidden">
+<div  id="tvControls">
  <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 ">
 
 <div class="form-group">
@@ -117,7 +118,7 @@ div#editor {
       <button href="#" class="btn btn-sm btn-default " disabled> <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></button>
       <button href="#" class="btn btn-sm btn-default  makeHTML"> <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Download Article </button>
  
-      <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target=".channelSettingsModal"> <span class="g glyphicon glyphicon-cog" aria-hidden="true"></button>
+      <!-- <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target=".channelSettingsModal"> <span class="g glyphicon glyphicon-cog" aria-hidden="true"></button> -->
  </div>
 
 </div>
@@ -174,17 +175,11 @@ div#editor {
   </div>
   </form>
 </div>
-
-
-
 <!-- Include the Quill library -->
 <script src="https://cdn.quilljs.com/1.3.2/quill.js"></script>
-
 <!-- Initialize Quill editor -->
 <script>
 
-
-// 
 var toolbarOptions = [
   [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
 
@@ -220,7 +215,7 @@ var quill = new Quill('#editor', {
 
 var toolbar = quill.getModule('toolbar');
 toolbar.addHandler('author', function() {
-  console.log('author')
+  // console.log('author')
 });
 
 
@@ -231,20 +226,10 @@ customButton.addEventListener('click', function() {
     quill.insertEmbed(range.index, "<footer>Author</footer>");
   }
 });
-
-
-
-// var counter = quill.getModule('counter');
-
-// // We can now access calculate() directly
-// console.log(counter.calculate(), 'words');
-
-
 </script>
-
-
-
 <script>
+// var client  = mqtt.connect('mqtt://iot.eclipse.org/bbc/subtitles/bbc_news24/compacted');
+
 'use strict';
 
 var startConnectionEl = document.querySelector('.startConnection');
@@ -255,142 +240,64 @@ var saveChannelsSettingsBtn = document.querySelector('.saveChannelsSettingsBtn')
 var closeChannelsSettingsBtn = document.querySelector('.closeChannelsSettingsBtn');
 var exampleBtn  = document.getElementById('exampleBtn');
 
+var channelsFeedUrl = [ 
+  {
+    channelName: "C-SPAN", 
+    channelUrl: "https://openedcaptions.com:443"
+  },
+  {
+    channelName: "CNN", 
+    channelUrl: "http://openedcaptions.media.mit.edu:8080"
+  },
+  {
+    channelName: "Fox", 
+    channelUrl: "http://openedcaptions.media.mit.edu:8082"
+  },
+  {
+    channelName: "MSNBC", 
+    channelUrl: "http://openedcaptions.media.mit.edu:8081"
+  },
+  {
+    channelName: "BBC ONE London",
+    channelUrl: "http://localhost:8002"
+  }
+];
+
+
+setFeedChannels(channelsFeedUrl)
+
+function setFeedChannels(channels){
+  // console.log(channels)
+  // saveChannelsLocally(channels);
+  // reset
+  channelSelectEl.innerHTML="";
+  //display 
+  channels.forEach((oneChannel)=>{
+    // console.log(oneChannel)
+      var option = document.createElement('option');
+      option.value = oneChannel.channelUrl;
+      option.innerText = oneChannel.channelName;
+      // console.log('option',option);
+      channelSelectEl.appendChild(option);
+      // console.log('channelSelectEl',channelSelectEl);
+  });   
+  // console.log(channelSelectEl);
+}
+
 
 exampleBtn.onclick = function(){
   quill.setContents(exampleSpeechDelta);
   // quill.setText(exampleSpeech);
 }
 
- 
-
-var channelsUrls;
-
-
- document.addEventListener("DOMContentLoaded", function(event) {
-    if (typeof(Storage) !== "undefined") {
-        // Code for localStorage/sessionStorage.
-        if(channelsAreSetInLocalStorage()){
-          setChannels(getChannelsFromLocalStorage());
-        }
-    } else {
-        // Sorry! No Web Storage support..
-        alert("We are unable to save changes on your browser, try using Chrome or another browser that supports local storage");
-    }
-});
-
-
-//check local storage exists and is valid
-
-function channelsAreSetInLocalStorage(){
-  if(localStorage.getItem("channels") === null){
-    return false;
-  }else{
-    return true;
-  }
-}
-
-function saveChannelsLocally(channels){
-  console.info("saving channels");
-  localStorage.setItem("channels", JSON.stringify(channels));
-}
-
-function getChannelsFromLocalStorage(channels){
-  console.info("retrieving channels");
-  var channelsTmp = localStorage.getItem("channels");
-
-  return JSON.parse(channelsTmp);
-}
-
-
-
-
-saveChannelsSettingsBtn.onclick = function(){
-  var channelsFromForm = $('form#channelsSettings').serializeArray();
-  var channels = convertAllChannelsFormForm(channelsFromForm);
-
-  // console.log('channels',channels);
-  setChannels(channels);
-
-  //TODO: close modal when done, click modal close button.
-  closeChannelsSettingsBtn.click()
-}
-
-function convertAllChannelsFormForm(channlsFromForm){
-  // var result = []
-  // result.push(
-   return  convertOneChannelFromForm(channlsFromForm) //)
-  //  var chunkedChannlsFromForm = Array.chunk(channlsFromForm,2);
-  //  console.log("chunkedChannlsFromForm",chunkedChannlsFromForm)
-  // var results = [];
-  // chunkedChannlsFromForm.forEach(function(ch){
-  //   results.push(convertOneChannelFromForm(ch))
-  // })
-  // return results;
-}
-
-function convertOneChannelFromForm(channelFromForm){
-  // {name: "channel-name", value: "sdf"}
-  var channel ={}
-  channel[channelFromForm[0].value] = channelFromForm[1].value.trim();
-  return channel; //eg {channel-name: "sdf"}
-}
-
-
-
-function channelsAreSet(){
-  if(channelsUrls == undefined){
-    return false;
-  }else{
-    return true;
-  }
-}
-
-
-function setChannels(channels){
-  channelsUrls = channels;
-
-  saveChannelsLocally(channels);
-  // reset
-  channelSelectEl.innerHTML="";
-  //display 
-  for (var property in channels) {
-      if (channels.hasOwnProperty(property)) {
-          var tmpOption = addChannelOption(property);
-          channelSelectEl.appendChild(tmpOption);
-      }
-  }
-  showChannelControls(true);
-
-}
-
-function addChannelOption(channelName){
-   var option = document.createElement('option');
-    option.value = channelName;
-    option.innerText = channelName;
-    return option;
-} 
-
-
-function showChannelControls(bool){
-  if(bool){
-    tvControlsEl.classList=""
-  }else{
-     tvControlsEl.classList="hidden";
-  }
-  
-}
-
 var socket; 
-
 
 function currentChannelSelected(){
   return channelSelectEl.options[channelSelectEl.selectedIndex].value;
 }
 
-
 function getCurrentChannelUrl(){
-  var currentChannel = currentChannelSelected();
-  var socketUrl = channelsUrls[currentChannel];
+  var socketUrl =  currentChannelSelected();//channelsUrls[currentChannel];
   return socketUrl;
 }
 
@@ -418,8 +325,6 @@ function initialiseConnection(){
         // console.log("user",sharedtext);
     }
     //end collab
-
-
     // socket.emit('my other event', { my: 'data' });
   });
 
@@ -429,18 +334,13 @@ function initialiseConnection(){
 }
 
 startConnectionEl.onclick = function(){
-  if(channelsAreSet()){
     initialiseConnection();
     console.info("----> start connection");
     // socket.connect();
     socket.open(); 
     closeConnectionEl.disabled = false;
     startConnectionEl.disabled = true;
-    channelSelectEl.disabled = true;
-  }else{
-    alert("You need to set the channels to be able to start a stream, click on settings.");
-  }
-  
+    channelSelectEl.disabled = true; 
 }
 
 closeConnectionEl.onclick = function(){
@@ -451,7 +351,6 @@ closeConnectionEl.onclick = function(){
   channelSelectEl.disabled = false;
 }
 
-
 /* TogetherJS Sync content of text editor across users 
 TODO: 
 - Better sync between 
@@ -461,20 +360,9 @@ TODO:
 quill.on('text-change', function(delta, oldDelta, source) {
   if (source == 'api') {
     console.log("An API call triggered this change.");
-    // var sharedtext = quill.getContents();
-    // var sharedtext = JSON.stringify(delta);
-
-    //  if(TogetherJS.running){
-    //     TogetherJS.send({
-    //       type: "text-send-api",
-    //       output: sharedtext
-    //     });
-    //  }
-    // console.log("API Call",sharedtext);
   } else if (source == 'user') {
     console.log("A user action triggered this change.");
     var sharedtext = JSON.stringify(delta);
-
     if(TogetherJS.running){
         TogetherJS.send({
           type: "text-send",
@@ -487,24 +375,11 @@ quill.on('text-change', function(delta, oldDelta, source) {
 
 var toghterJSBtnEl = document.getElementById('start-togetherjs');
 
-
-// TogetherJS.on("ready", function () {
-//   toghterJSBtnEl.disabled = true ;
-//   console.info("togehter JS started");
-
-//   //initial setup shared with users that join?
-//   // var sharedtext = quill.getContents();
-//   // TogetherJS.send({type: "togetherjs.hello", output: sharedtext});
-
-// });
-
 TogetherJS.on("close", function () {
   toghterJSBtnEl.disabled = false; 
   console.info("togehter JS closed");
-
   startConnectionEl.disabled = false;
 });
-
 
 // This makes sure that new users who join are up to speed with content of the text editor
 TogetherJS.hub.on("togetherjs.hello", function (msg) {
@@ -513,10 +388,7 @@ TogetherJS.hub.on("togetherjs.hello", function (msg) {
     }
     console.info('msg', msg);
     var sharedtext = quill.getContents();
-
     console.log("ogetherjs.hello",sharedtext);
-    // quill.setContents(msg.output);
-     // var sharedtext = quill.getContents();
      TogetherJS.send({
           type: "text-send-new-user",
           output: JSON.stringify(sharedtext)
@@ -551,8 +423,6 @@ TogetherJS.hub.on("text-send-opened-catpions", function (msg) {
     quill.insertText(length, msg.output );
 });
 
-
-
 var makeHTMLBtnEl = document.querySelector('.makeHTML');
 
 makeHTMLBtnEl.onclick= function(){
@@ -564,16 +434,11 @@ makeHTMLBtnEl.onclick= function(){
   saveAs(file, 'index.html');
 }
 
-
-
-
 function generateHTMLFromQuilContent(){
   // var deltaContent = quill.getContents();
   // return quillGetHTML(deltaContent)
   return document.querySelector(".ql-editor").innerHTML; 
 }
-
-
 
 var htmlHead = `<!DOCTYPE html>
 <html lang="en">
